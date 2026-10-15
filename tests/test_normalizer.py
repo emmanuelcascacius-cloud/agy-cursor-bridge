@@ -30,6 +30,16 @@ def test_extract_messages_cursor_responses_input():
     assert messages[0].role == "user"
     assert messages[0].content == "Fix this bug"
 
+def test_extract_messages_string_input():
+    req = ChatCompletionRequest(
+        model="gemini-3.8-flash",
+        input="Direct string input prompt",
+    )
+    messages = RequestNormalizer.extract_messages(req)
+    assert len(messages) == 1
+    assert messages[0].role == "user"
+    assert messages[0].content == "Direct string input prompt"
+
 def test_normalize_turns_and_fingerprint():
     req = ChatCompletionRequest(
         model="cursor-fast",
@@ -46,8 +56,30 @@ def test_normalize_turns_and_fingerprint():
     assert norm.latest_user_message == "Follow-up question"
     assert norm.conversation_fingerprint != ""
 
+def test_normalize_developer_role():
+    req = ChatCompletionRequest(
+        model="agy-flash",
+        messages=[
+            ChatMessage(role="developer", content="Custom instruction rules"),
+            ChatMessage(role="user", content="How do I write a fast sort?"),
+        ],
+    )
+    norm = RequestNormalizer.normalize(req)
+    assert norm.model == "gemini-3.8-flash"
+    assert "Custom instruction rules" in norm.system_instruction
+    assert norm.latest_user_message == "How do I write a fast sort?"
+    assert norm.is_first_turn is True
+
 def test_map_model_aliases():
     assert RequestNormalizer.map_model_name("cursor-agent") == "gemini-3.8-flash"
     assert RequestNormalizer.map_model_name("sonnet") == "claude-3-7-sonnet"
     assert RequestNormalizer.map_model_name("deepseek") == "deepseek-r1"
     assert RequestNormalizer.map_model_name("gemini-3.8-pro") == "gemini-3.8-pro"
+    assert RequestNormalizer.map_model_name("agy-flash") == "gemini-3.8-flash"
+    assert RequestNormalizer.map_model_name("agy-pro") == "gemini-3.8-pro"
+    assert RequestNormalizer.map_model_name("agy-sonnet") == "claude-3-7-sonnet"
+    assert RequestNormalizer.map_model_name("agy-deepseek") == "deepseek-r1"
+    assert RequestNormalizer.map_model_name("gpt-4o") == "gemini-3.8-flash"
+    assert RequestNormalizer.map_model_name("gpt-4") == "gemini-3.8-pro"
+    assert RequestNormalizer.map_model_name("gpt-4o-mini") == "gemini-3.8-flash-lite"
+    assert RequestNormalizer.map_model_name("o1") == "gemini-3.8-pro"

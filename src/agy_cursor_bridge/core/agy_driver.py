@@ -112,19 +112,21 @@ class AgyDriver:
 
         except asyncio.CancelledError:
             logger.info("Client disconnected or cancelled stream. Terminating agy process...")
-            try:
-                proc.terminate()
-                await asyncio.wait_for(proc.wait(), timeout=2.0)
-            except Exception:
-                proc.kill()
             raise
         except Exception as e:
             logger.exception(f"Unexpected error in stream_turn: {e}")
-            try:
-                proc.kill()
-            except Exception:
-                pass
             yield {"event": "error", "message": str(e)}
+        finally:
+            if proc and proc.returncode is None:
+                try:
+                    proc.terminate()
+                    await asyncio.wait_for(proc.wait(), timeout=1.5)
+                except Exception:
+                    try:
+                        proc.kill()
+                        await asyncio.wait_for(proc.wait(), timeout=1.0)
+                    except Exception:
+                        pass
 
     @classmethod
     async def run_turn(

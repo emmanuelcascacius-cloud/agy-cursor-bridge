@@ -45,6 +45,7 @@ async def fetch_available_models() -> List[str]:
     if _cached_models and (now - _last_fetch_time < 300.0):
         return _cached_models
 
+    proc = None
     try:
         agy_bin = AuthManager.find_agy_binary()
         proc = await asyncio.create_subprocess_exec(
@@ -53,7 +54,16 @@ async def fetch_available_models() -> List[str]:
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE
         )
-        stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=5.0)
+        try:
+            stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=5.0)
+        except Exception:
+            if proc and proc.returncode is None:
+                try:
+                    proc.kill()
+                    await proc.wait()
+                except Exception:
+                    pass
+            raise
         output = stdout.decode("utf-8", errors="replace")
 
         discovered: List[str] = []

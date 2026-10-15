@@ -49,6 +49,7 @@ class AuthManager:
         if not AuthManager.is_token_present():
             return False, f"Antigravity OAuth token not found at {AuthManager.get_token_path()}. Run 'agy' once to sign in."
 
+        proc = None
         try:
             proc = await asyncio.create_subprocess_exec(
                 agy_bin,
@@ -62,9 +63,20 @@ class AuthManager:
             err_msg = stderr.decode().strip() or stdout.decode().strip()
             return False, f"agy models returned error (code {proc.returncode}): {err_msg}"
         except asyncio.TimeoutError:
-            # If models check timed out, token is still present so we allow proceeding
+            if proc and proc.returncode is None:
+                try:
+                    proc.kill()
+                    await proc.wait()
+                except Exception:
+                    pass
             return True, "Auth token present (models check timed out)"
         except Exception as e:
+            if proc and proc.returncode is None:
+                try:
+                    proc.kill()
+                    await proc.wait()
+                except Exception:
+                    pass
             return False, f"Failed to check agy auth: {e}"
 
     @staticmethod
