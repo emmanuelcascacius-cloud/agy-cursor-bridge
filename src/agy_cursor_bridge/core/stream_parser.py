@@ -101,7 +101,7 @@ class StreamParser:
                         tool_name = step.get("tool_name", "tool")
                         tool_state = step.get("state", "ACTIVE")
                         if tool_state == "ACTIVE":
-                            msg = f"\n> 🛠️ *Antigravity running `{tool_name}`...*\n"
+                            msg = f"\n> [Antigravity running tool: `{tool_name}`]\n"
                             chunk = {
                                 "id": completion_id,
                                 "object": "chat.completion.chunk",

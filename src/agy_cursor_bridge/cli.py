@@ -23,30 +23,30 @@ def version():
 @app.command()
 def check():
     """Verifies that agy CLI is installed, authenticated, and ready."""
-    typer.echo("🔍 Checking Antigravity (agy) configuration...")
+    typer.echo("[*] Checking Antigravity (agy) configuration...")
     try:
         binary_path = AuthManager.find_agy_binary()
-        typer.secho(f"  ✓ Found agy binary at: {binary_path}", fg=typer.colors.GREEN)
+        typer.secho(f"  [+] Found agy binary: {binary_path}", fg=typer.colors.GREEN)
     except Exception as e:
-        typer.secho(f"  ✗ Binary error: {e}", fg=typer.colors.RED)
+        typer.secho(f"  [-] Binary error: {e}", fg=typer.colors.RED)
         raise typer.Exit(code=1)
 
     token_path = AuthManager.get_token_path()
     if AuthManager.is_token_present():
-        typer.secho(f"  ✓ Active OAuth token found at: {token_path}", fg=typer.colors.GREEN)
+        typer.secho(f"  [+] Active OAuth token: {token_path}", fg=typer.colors.GREEN)
     else:
-        typer.secho(f"  ✗ No OAuth token found at: {token_path}", fg=typer.colors.YELLOW)
-        typer.echo("    Please run 'agy' once in your terminal to complete interactive login.")
+        typer.secho(f"  [-] No OAuth token found at: {token_path}", fg=typer.colors.YELLOW)
+        typer.echo("      Run 'agy' once in your terminal to complete login.")
 
-    typer.echo("  • Testing connection to Antigravity backend...")
+    typer.echo("  [*] Testing connection to Antigravity backend...")
     is_auth, status = asyncio.run(AuthManager.verify_auth())
     if is_auth:
-        typer.secho(f"  ✓ Antigravity backend status: {status}", fg=typer.colors.GREEN)
+        typer.secho(f"  [+] Backend status: {status}", fg=typer.colors.GREEN)
     else:
-        typer.secho(f"  ✗ Backend verification failed: {status}", fg=typer.colors.RED)
+        typer.secho(f"  [-] Backend verification failed: {status}", fg=typer.colors.RED)
         raise typer.Exit(code=1)
 
-    typer.secho("\n✨ All checks passed! agy-cursor-bridge is ready to use.", fg=typer.colors.GREEN, bold=True)
+    typer.secho("\nAll checks passed. agy-cursor-bridge is ready.", fg=typer.colors.GREEN, bold=True)
 
 @app.command()
 def models():
@@ -89,37 +89,37 @@ def serve(
 
     if tunnel:
         tunnel_mgr = TunnelManager(local_port=port)
-        typer.echo("🌐 Initializing Cloudflare Quick Tunnel...")
+        typer.echo("[*] Initializing Cloudflare Quick Tunnel...")
         success, url_or_err = asyncio.run(tunnel_mgr.start())
         if success and url_or_err:
             public_url = url_or_err
-            typer.secho(f"✓ Tunnel established: {public_url}", fg=typer.colors.GREEN)
+            typer.secho(f"[+] Tunnel established: {public_url}", fg=typer.colors.GREEN)
         else:
-            typer.secho(f"Warning: Cloudflare tunnel could not be created ({url_or_err}). Proceeding with local binding.", fg=typer.colors.YELLOW)
+            typer.secho(f"[-] Cloudflare tunnel could not be created ({url_or_err}). Using local binding.", fg=typer.colors.YELLOW)
 
     # Print clean Banner
     display_host = "127.0.0.1" if host in ("0.0.0.0", "127.0.0.1") else host
     base_url = f"http://{display_host}:{port}/v1"
     cursor_base = f"{public_url}/v1" if public_url else base_url
 
-    typer.echo("\n" + "═" * 70)
-    typer.secho("  🚀 agy-cursor-bridge is LIVE & READY FOR CURSOR", fg=typer.colors.CYAN, bold=True)
-    typer.echo("═" * 70)
+    typer.echo("\n" + "=" * 70)
+    typer.secho("  agy-cursor-bridge: OpenAI-Compatible Gateway for Cursor IDE", bold=True)
+    typer.echo("=" * 70)
     typer.echo(f"  Local Base URL:   {base_url}")
     if public_url:
         typer.secho(f"  Public Tunnel:    {cursor_base}", fg=typer.colors.GREEN, bold=True)
     typer.echo(f"  OpenAI API Key:   {api_key}")
     typer.echo(f"  Default Model:    {model}")
     typer.echo(f"  Reasoning Effort: {effort}")
-    typer.echo("─" * 70)
-    typer.secho("  Cursor Setup Guide (Fixing 'Upgrade' & 'Already on it' Collisions):", bold=True)
-    typer.echo(f"  1. Go to Settings -> Cursor Settings -> Models")
+    typer.echo("-" * 70)
+    typer.secho("  Cursor Setup Guide:", bold=True)
+    typer.echo("  1. Open Cursor Settings -> Models")
     typer.echo(f"  2. OpenAI API Key:           {api_key}")
     typer.echo(f"  3. Override OpenAI Base URL: {cursor_base}")
-    typer.echo(f"  4. Models Configuration (Two choices):")
-    typer.echo(f"     Choice A (Recommended): Type 'agy-flash' in 'Add model' -> click '+'")
-    typer.echo(f"     Choice B: Select default 'gpt-4o' in Chat (auto-routed to Gemini 3.8)")
-    typer.echo("═" * 70 + "\n")
+    typer.echo("  4. Model Selection:")
+    typer.echo("     - Option A: Type 'agy-flash' in Add Model -> click +")
+    typer.echo("     - Option B: Use default 'gpt-4o' in Chat (auto-routed to Gemini 3.8)")
+    typer.echo("=" * 70 + "\n")
 
     try:
         uvicorn.run("agy_cursor_bridge.server:app", host=host, port=port, log_level="info")

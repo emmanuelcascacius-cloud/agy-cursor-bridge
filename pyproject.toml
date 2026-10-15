@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [
-    { name = "Emmanuel Cascacius" },
+    { name = "Emmanuel Arhin" },
 ]
 dependencies = [
     "fastapi>=0.110.0",
