@@ -7,7 +7,10 @@ class Settings(BaseModel):
     # Server configuration
     host: str = Field(default="0.0.0.0", description="Host address to bind the HTTP server to")
     port: int = Field(default=8000, description="Port number to bind the HTTP server to")
-    api_key: str = Field(default=os.getenv("AGY_API_KEY", "agy-live"), description="Virtual OpenAI API key required by Cursor")
+    api_key: str = Field(
+        default=os.getenv("AGY_API_KEY", "sk-proj-antigravity-live-7f8e9d0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e"),
+        description="Virtual OpenAI API key required by Cursor (standard sk-... format)"
+    )
     
     # Antigravity CLI configuration
     agy_binary: str = Field(

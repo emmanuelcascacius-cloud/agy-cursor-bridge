@@ -88,20 +88,43 @@ class RequestNormalizer:
 
         # Direct known mappings
         alias_map = {
+            # Default aliases
             "default": settings.default_model,
             "auto": "auto",
             "cursor-agent": settings.default_model,
             "cursor-small": "gemini-3.8-flash-lite",
             "cursor-fast": "gemini-3.8-flash",
+
+            # Non-colliding custom prefixes (for adding to Cursor Settings -> Models)
+            "agy-flash": "gemini-3.8-flash",
+            "agy-gemini": "gemini-3.8-flash",
+            "agy-gemini-3.8-flash": "gemini-3.8-flash",
+            "agy-pro": "gemini-3.8-pro",
+            "agy-gemini-3.8-pro": "gemini-3.8-pro",
+            "agy-sonnet": "claude-3-7-sonnet",
+            "agy-claude": "claude-3-7-sonnet",
+            "agy-deepseek": "deepseek-r1",
+            "agy-r1": "deepseek-r1",
+            "antigravity-flash": "gemini-3.8-flash",
+            "antigravity-pro": "gemini-3.8-pro",
+
+            # Built-in Cursor dropdown models mapped directly to Antigravity
+            "gpt-4o": "gemini-3.8-flash",
+            "gpt-4o-mini": "gemini-3.8-flash-lite",
+            "gpt-4": "gemini-3.8-pro",
+            "gpt-3.5-turbo": "gemini-3.8-flash-lite",
+            "claude-3-5-sonnet": "claude-3-7-sonnet",
+            "claude-3-5-sonnet-20241022": "claude-3-7-sonnet",
+            "o1": "gemini-3.8-pro",
+            "o3-mini": "gemini-3.8-flash",
+
+            # Raw names
             "gemini-flash": "gemini-3.8-flash",
             "gemini-pro": "gemini-3.8-pro",
             "sonnet": "claude-3-7-sonnet",
             "claude-sonnet": "claude-3-7-sonnet",
             "r1": "deepseek-r1",
             "deepseek": "deepseek-r1",
-            "gpt-4": "gemini-3.8-pro",
-            "gpt-4o": "gemini-3.8-flash",
-            "o3": "o3-mini",
         }
 
         for alias, mapped in alias_map.items():

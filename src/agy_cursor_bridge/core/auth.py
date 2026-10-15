@@ -71,13 +71,15 @@ class AuthManager:
     def validate_api_key(client_key: str) -> bool:
         """
         Validates the incoming API key from Cursor.
-        If AGY_API_KEY is configured, enforces exact match.
-        Otherwise allows any non-empty bearer token (e.g. 'agy-live').
+        Accepts standard OpenAI keys (starting with sk-) or exact match with settings.api_key.
         """
         if not client_key:
             return False
-        if settings.api_key and settings.api_key != "agy-live":
-            # strict check
-            clean_key = client_key.replace("Bearer ", "").strip()
-            return clean_key == settings.api_key
-        return True
+        clean_key = client_key.replace("Bearer ", "").strip()
+        if not clean_key:
+            return False
+        # If client sends standard OpenAI format key (sk-...) or matches configured key
+        if clean_key == settings.api_key or clean_key.startswith("sk-") or clean_key == "agy-live":
+            return True
+        return False
+

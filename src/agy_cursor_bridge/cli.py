@@ -62,7 +62,7 @@ def models():
 def serve(
     host: str = typer.Option("0.0.0.0", help="Host address to bind to"),
     port: int = typer.Option(8000, help="Port to listen on"),
-    api_key: str = typer.Option("agy-live", help="Virtual OpenAI API key expected by Cursor"),
+    api_key: str = typer.Option("sk-proj-antigravity-live-7f8e9d0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e", help="Virtual OpenAI API key expected by Cursor"),
     model: str = typer.Option("gemini-3.8-flash", help="Default model name"),
     mode: str = typer.Option("auto", help="Execution mode (auto, accept-edits, plan)"),
     effort: str = typer.Option("high", help="Reasoning effort (low, medium, high, xhigh, max)"),
@@ -102,23 +102,24 @@ def serve(
     base_url = f"http://{display_host}:{port}/v1"
     cursor_base = f"{public_url}/v1" if public_url else base_url
 
-    typer.echo("\n" + "═" * 68)
+    typer.echo("\n" + "═" * 70)
     typer.secho("  🚀 agy-cursor-bridge is LIVE & READY FOR CURSOR", fg=typer.colors.CYAN, bold=True)
-    typer.echo("═" * 68)
+    typer.echo("═" * 70)
     typer.echo(f"  Local Base URL:   {base_url}")
     if public_url:
         typer.secho(f"  Public Tunnel:    {cursor_base}", fg=typer.colors.GREEN, bold=True)
     typer.echo(f"  OpenAI API Key:   {api_key}")
     typer.echo(f"  Default Model:    {model}")
     typer.echo(f"  Reasoning Effort: {effort}")
-    typer.echo("─" * 68)
-    typer.secho("  Cursor Configuration Instructions:", bold=True)
-    typer.echo(f"  1. Open Cursor -> Settings -> Models")
-    typer.echo(f"  2. OpenAI API Key:             {api_key}")
-    typer.echo(f"  3. Override OpenAI Base URL:   {cursor_base}")
-    typer.echo(f"  4. Add Model Name:             {model}")
-    typer.echo(f"  5. Click 'Verify' to test connection")
-    typer.echo("═" * 68 + "\n")
+    typer.echo("─" * 70)
+    typer.secho("  Cursor Setup Guide (Fixing 'Upgrade' & 'Already on it' Collisions):", bold=True)
+    typer.echo(f"  1. Go to Settings -> Cursor Settings -> Models")
+    typer.echo(f"  2. OpenAI API Key:           {api_key}")
+    typer.echo(f"  3. Override OpenAI Base URL: {cursor_base}")
+    typer.echo(f"  4. Models Configuration (Two choices):")
+    typer.echo(f"     Choice A (Recommended): Type 'agy-flash' in 'Add model' -> click '+'")
+    typer.echo(f"     Choice B: Select default 'gpt-4o' in Chat (auto-routed to Gemini 3.8)")
+    typer.echo("═" * 70 + "\n")
 
     try:
         uvicorn.run("agy_cursor_bridge.server:app", host=host, port=port, log_level="info")

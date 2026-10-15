@@ -24,6 +24,17 @@ DEFAULT_FALLBACK_MODELS = [
     "deepseek-v3",
     "gpt-5.4",
     "o3-mini",
+    # Non-colliding custom names for Cursor
+    "agy-flash",
+    "agy-gemini",
+    "agy-gemini-3.8-flash",
+    "agy-pro",
+    "agy-sonnet",
+    "agy-deepseek",
+    # Standard OpenAI models
+    "gpt-4o",
+    "gpt-4",
+    "gpt-4o-mini",
     "auto",
     "cursor-agent",
 ]
@@ -58,8 +69,21 @@ async def fetch_available_models() -> List[str]:
                     discovered.append(model_id)
 
         if discovered:
-            # Add virtual aliases
-            for alias in ["auto", "cursor-agent"]:
+            # Add virtual aliases and non-colliding names
+            extra_aliases = [
+                "agy-flash",
+                "agy-gemini",
+                "agy-gemini-3.8-flash",
+                "agy-pro",
+                "agy-sonnet",
+                "agy-deepseek",
+                "gpt-4o",
+                "gpt-4",
+                "gpt-4o-mini",
+                "auto",
+                "cursor-agent",
+            ]
+            for alias in extra_aliases:
                 if alias not in discovered:
                     discovered.append(alias)
             _cached_models = discovered
