@@ -24,12 +24,11 @@ router = APIRouter(tags=["completions"])
 security = HTTPBearer(auto_error=False)
 
 def verify_token(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)):
-    if credentials:
+    if credentials and credentials.credentials:
         if not AuthManager.validate_api_key(credentials.credentials):
             raise HTTPException(status_code=401, detail="Invalid API Key")
-    elif settings.api_key and settings.api_key != "agy-live":
-        raise HTTPException(status_code=401, detail="Authentication required")
     return True
+
 
 @router.post("/v1/chat/completions")
 @router.post("/cursor/chat/completions")

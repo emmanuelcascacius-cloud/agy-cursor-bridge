@@ -98,11 +98,9 @@ async def fetch_available_models() -> List[str]:
     return _cached_models
 
 def verify_token(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)):
-    if credentials:
+    if credentials and credentials.credentials:
         if not AuthManager.validate_api_key(credentials.credentials):
             raise HTTPException(status_code=401, detail="Invalid API Key")
-    elif settings.api_key and settings.api_key != "agy-live":
-        raise HTTPException(status_code=401, detail="Authentication required")
     return True
 
 @router.get("/v1/models", response_model=ModelListResponse)

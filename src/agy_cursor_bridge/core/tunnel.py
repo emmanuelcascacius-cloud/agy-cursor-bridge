@@ -72,7 +72,7 @@ class TunnelManager:
         )
 
         # cloudflared logs the tunnel URL to stderr
-        pattern = re.compile(r"https://[a-zA-Z0-9-]+\.trycloudflare\.com")
+        pattern = re.compile(r"https://(?!api\.)[a-zA-Z0-9-]+\.trycloudflare\.com")
         start_time = asyncio.get_event_loop().time()
 
         while asyncio.get_event_loop().time() - start_time < 15.0:
@@ -83,7 +83,7 @@ class TunnelManager:
                 break
             line = line_bytes.decode("utf-8", errors="replace")
             match = pattern.search(line)
-            if match:
+            if match and "api.trycloudflare.com" not in match.group(0):
                 self.public_url = match.group(0)
                 logger.info(f"Cloudflare tunnel established: {self.public_url}")
                 return True, self.public_url
