@@ -253,30 +253,30 @@ oss/agy-cursor-bridge/
 ## 8. Detailed Step-by-Step Implementation Plan
 
 ### Phase 1: Foundation & Authentication Check
-- [ ] Create Python project scaffolding (`pyproject.toml`) with dependencies: `fastapi`, `uvicorn`, `pydantic>=2.0`, `typer`, `httpx`.
-- [ ] Implement `core/auth.py` to check for `~/.gemini/antigravity-cli/antigravity-oauth-token` and run `agy models` to verify local authentication.
-- [ ] Build `cli.py` with commands:
+- [x] Create Python project scaffolding (`pyproject.toml`) with dependencies: `fastapi`, `uvicorn`, `pydantic>=2.0`, `typer`, `httpx`.
+- [x] Implement `core/auth.py` to check for `~/.gemini/antigravity-cli/antigravity-oauth-token` and run `agy models` to verify local authentication.
+- [x] Build `cli.py` with commands:
   - `agy-cursor check`: Tests local `agy` status, models, and credentials.
   - `agy-cursor models`: Prints live available models from `agy`.
   - `agy-cursor serve`: Starts the bridge server.
 
 ### Phase 2: FastAPI Server & Model Discovery
-- [ ] Implement `server.py` with FastAPI, setting up permissive CORS, chunked transfer support, and error interceptors.
-- [ ] Implement `routes/models.py`:
+- [x] Implement `server.py` with FastAPI, setting up permissive CORS, chunked transfer support, and error interceptors.
+- [x] Implement `routes/models.py`:
   - Dynamically query `agy models` or cache the model roster.
   - Expose `/v1/models`, `/cursor/models`, and `/cursor/v1/models` in standard OpenAI schema (`{"object": "list", "data": [...]}`).
 
 ### Phase 3: Request Normalizer & Subprocess Driver
-- [ ] Implement `core/normalizer.py`:
+- [x] Implement `core/normalizer.py`:
   - Parse both OpenAI `messages` format and Cursor `input` Responses API format.
   - Extract active prompt, history context, and system instructions.
-- [ ] Implement `core/agy_driver.py`:
+- [x] Implement `core/agy_driver.py`:
   - Asynchronously spawn `agy` with `--output-format stream-json`, `--dangerously-skip-permissions`, `--model <model>`, and `-p <prompt>`.
   - Provide asynchronous line generator reading NDJSON from stdout.
   - Handle process timeouts, cancellation signals, and unexpected exits.
 
 ### Phase 4: Real-Time SSE Stream Transformer
-- [ ] Implement `core/stream_parser.py`:
+- [x] Implement `core/stream_parser.py`:
   - Map `text_delta` to `choices[0].delta.content`.
   - Map `thought_delta` to `reasoning_content` or `<thought>` blocks.
   - Emit usage tokens upon `result` event.
@@ -284,18 +284,18 @@ oss/agy-cursor-bridge/
   - Ensure zero output buffering via `StreamingResponse(..., media_type="text/event-stream")`.
 
 ### Phase 5: Stateful Session Management
-- [ ] Implement `core/session_store.py`:
+- [x] Implement `core/session_store.py`:
   - Track conversation history hashes.
   - Map conversation IDs so multi-turn Cursor dialogues reuse `agy --conversation <id>`.
 
 ### Phase 6: Built-in Cloudflare Tunnel Integration
-- [ ] Implement `core/tunnel.py`:
+- [x] Implement `core/tunnel.py`:
   - Check for existing `cloudflared` binary or provide automated run.
   - Extract public tunnel hostname and display clean startup banner with copy-pasteable URLs for Cursor.
 
 ### Phase 7: Verification & Testing
-- [ ] Unit tests for stream parsing, normalizer edge cases, and session hashing.
-- [ ] End-to-end integration test with live Cursor IDE:
+- [x] Unit tests for stream parsing, normalizer edge cases, and session hashing.
+- [x] End-to-end integration test with live Cursor IDE:
   - Test Cursor Settings model verification (`GET /v1/models`).
   - Test Cursor Chat (`Cmd+L`).
   - Test Cursor Composer / Agent (`Cmd+I`).
